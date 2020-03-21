@@ -69,16 +69,37 @@ public class MovieLister {
 
     // find node 
     public Movie find(String title) {
-
+	Movie current = root;
+	String currentTitle = current.getTitle();
+	while (currentTitle != title) {                      // until we reach the desired title or cant find it
+	    if (currentTitle.compareTo(title) < 0)           // go left because value is less than parent
+		current = current.getLeftChild();
+	    else 
+		current = current.getRightChild();           // go right because value is more than parent
+	    if (current == null) 
+		return null;
+	    currentTitle = current.getTitle();               // update title to new value after we assign new value to current
+	}
+	return current;
     }
 
     // return a new tree data structure that contains a list of movies that meet the condition
     public MovieLister filter(String startTitle, String endTitle) {
-	Movie start = find(startTitle);
-	Movie end = find(endTitle);
+	Movie start = find(startTitle);         // smaller
+	Movie end = find(endTitle); 		// bigger
+	Movie current = start.getRightChild();  // doesnt include start 
 	MovieLister newTree = new MovieLister();
-		
+
+ 	// small to big so we traverse right until we reach target
+	while (!current.equals(end)) {          // for the sake of simplicity we assume that theres a valid start and end
+	    if (current == null)                // reached a leaf so we have to go back to root  
+		current = root;                 // assuming we reached the left subtree of the root instead of the right bc then we would have found the value already since right is the largest 
+	    newTree.insert(current.getTitle(), current.getYear());
+	    current = current.getRightChild();
+	}
+	return newTree;
     }
+	
     // visit itself and print its values 
     public void print() {
 	
